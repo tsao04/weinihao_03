@@ -1,0 +1,162 @@
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>為你好 · 安全</title><meta name="description" content="在責備與擔心之間，轉動一個角度。稀疏正方體點陣互動實驗。"><style>:root{color-scheme:dark;font-family:"PingFang TC","Noto Sans TC",sans-serif;background:#08090a;color:#e8e9e9}*{box-sizing:border-box}body{margin:0;height:100dvh;overflow:hidden;display:flex;flex-direction:column}header{padding:25px 34px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;z-index:2}a{color:inherit;text-decoration:none;letter-spacing:3px}a span{color:#878b8d}.edition{font:10px monospace;letter-spacing:2px;color:#737a7d}button{font:inherit;color:#aeb3b5;border:1px solid #33383b;border-radius:3px;background:transparent;padding:9px 13px;cursor:pointer}button:hover,button.active{border-color:#a0bdc6;color:white;background:#20282c}button:focus-visible,canvas:focus-visible{outline:2px solid #9ce5ef}main{flex:1;position:relative;min-height:0;display:grid;place-items:center}canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}canvas:active{cursor:grabbing}#intro{position:absolute;top:4%;left:34px;display:flex;flex-direction:column;font-size:11px;line-height:1.9;letter-spacing:2px;color:#788084;pointer-events:none}footer{margin:0 auto;padding:0 34px 22px;width:min(100%,1080px);z-index:2}.readout{display:flex;justify-content:space-between;align-items:center;font-size:13px;letter-spacing:3px}.readout b{font:25px monospace;font-weight:400;letter-spacing:0}.readout small{color:#697175;font:11px monospace}input[type=range]{accent-color:#c6d9dd;cursor:pointer}#angle{width:100%;height:20px;margin:12px 0 0}.ticks{display:flex;justify-content:space-between}.ticks button{border:0;padding:0;font:10px monospace;color:#737c80}.tools{margin-top:24px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:11px}.tools label{margin-left:8px;display:flex;align-items:center;gap:10px;color:#8f999d}.tools input{width:80px}.note{display:flex;justify-content:space-between;gap:12px;color:#59646a;font-size:10px;margin-top:16px;line-height:1.7}.note i{margin:0 8px}#restore{position:fixed;right:16px;bottom:16px;opacity:.55}body.clean header,body.clean footer,body.clean #intro{display:none}body.clean main{height:100dvh}body.clean #restore{display:block}@media(max-width:600px){header{padding:20px}.edition{display:none}#intro{left:20px;font-size:10px}footer{padding:0 20px 22px}.tools{flex-wrap:wrap;gap:6px;margin-top:18px}.tools label{width:100%;margin-top:7px}.note{flex-direction:column;gap:3px}.readout{font-size:11px}.tools button{padding:9px}.ticks{gap:8px}.ticks button{font-size:9px}}
+
+select{font:inherit;background:#10171a;color:#d2e0e5;border:1px solid #33383b;border-radius:3px;padding:5px} @media(max-width:600px){.tools label{width:auto;margin:6px 6px 0 0}.tools input{width:64px}}
+</style><body><header><a href="#">為你好<span>／ 安全</span></a><span class="edition">ROTATION STUDY — 03</span><button id="clean">隱藏介面 ↗</button></header><main><canvas id="art" aria-label="由稀疏空間方陣與兩個68乘68文字面組成的旋轉文字，可拖曳或用方向鍵操作" tabindex="0"></canvas><div id="intro"><span>在責備與擔心之間</span><span>轉動一個角度。</span></div></main><footer><div class="readout"><span id="phrase">這麼晚還不回家</span><span><b id="degrees">0</b>° <small>／ 360°</small></span></div><input id="angle" aria-label="旋轉角度" type="range" min="0" max="360" step="0.1" value="0"><div class="ticks"><button data-angle="0">0° · 話語</button><button data-angle="90">90°</button><button data-angle="180">180° · 心意</button><button data-angle="270">270°</button><button data-angle="360">360°</button></div><div class="tools"><button id="gyro">啟用陀螺儀</button><button id="reset">歸零校正</button><button id="play">自動旋轉</button><button id="full">全螢幕</button><label>空間密度 <select id="density" aria-label="空間點陣密度"><option value="6">疏</option><option value="4" selected>標準</option><option value="3">密</option></select></label><label>背景方塊 <input id="pointSize" type="range" min="8" max="25" value="16" aria-label="背景方塊尺寸"></label><label>傳導強度 <input id="impulse" type="range" min="40" max="160" value="100" aria-label="傳導強度"></label><label>立體視角 <input id="tilt" type="range" min="0" max="25" value="10" aria-label="立體視角強度"></label></div><div class="note"><span id="status" role="status">左右拖曳、方向鍵或角度滑桿，查看另一面的話。</span><span id="counts">68 × 68 字形 ／ 18³ 空間點陣</span></div></footer><button id="restore" hidden>顯示介面</button><script>window.SAFETY_MASKS=["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAA/////////wAAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAAAAAAAA/////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAA/////////////////wAAAAD/////AP8AAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAD//////////////wAAAAD/AAAA/wAAAAD/AAAAAAAAAP8AAP//AAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAAAAAAAAAP8A//////////////8AAAAA/wAA/wD///////////8AAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAD/////////AAAAAAAA/wAAAP8AAAAA/wD/AAAAAAD/AAD/AP8AAAD/AAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AP8A//8A/wD/AP8A/wAAAP8AAP8A/wAAAP8AAAD/AAAAAAAAAAAAAAAAAAAAAAAA////AAAA/////////wAAAAAAAP8A/wD/AP8AAP8AAP//AAAA/////wD/AAD/AAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAAAAAAAA//8AAP8A/wAAAP8AAAAAAAD/AAD/AP///////////wAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAP////////8AAAAAAAD/AAAAAP8AAAD/AAAAAAAAAP8AAP8AAAAA/wD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAA/wAAAAAA/wAAAAAAAP8AAP//AAAA/wAAAAAAAAAA/wAA/wAAAP8AAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAD/AAAAAAD/AAAAAAAA/wAAAAD/AP8AAP8AAAAAAAD/AAD/AAAA/wAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAP////////8AAAAAAP8AAAAAAAD/AAAAAP8AAAAAAP////8AAP8AAAD/AAAA/wAAAAAAAAAAAAAAAAAAAAAAAP8A/wAAAAAAAAAAAAAAAAAA/wAAAAAA////////AP8AAAAAAAAAAAD/AAAAAP8AAAD/AAAAAAAAAAAAAAAAAAAAAAD/AAAA//////////////8AAAAAAP////8AAAAAAAAAAP8AAAAAAAD//wAAAAAAAP////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAAAAAAD/AAAA////////////AAAAAAAA/////////////////wAAAAD//////////////////wAAAAAAAAAAAAD/AAAAAAAAAAD/AAD/AP8AAP8AAP8AAAAAAAAAAAAAAAAA/wAAAAAAAAAAAP8AAAAAAAAAAAAAAAD/AAAAAP////////////////8AAAD/AP///////////wAAAAAAAAAAAAAAAP8AAAAAAAAAAAAA/wAAAAAAAAAAAAAAAP8AAAAA/wAAAAAAAAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///8AAAAAAAAAAAD/AAAAAAAAAAAAAAAA/wAAAAAAAP///////////wAAAAAAAP//////////////AAAAAAAAAAAA/wD/AP8AAAAAAAAAAP8AAAD///////8AAAD/AAAAAAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAP8AAP8AAAAAAAAA/wAAAP8AAAAA/wAAAP8AAAAAAAAA//8A/wAAAAD/AAD///8AAP////////8AAAAAAAAAAP//AAAA/wAAAP//AAAAAAD/AAAA/wAAAAD/AAAA/wAAAAAA//8AAAD//wAA/wAAAAAA/wAA/wAAAAAA/wAAAAAAAP//AAAAAAD/AAAAAAD//wAAAP8AAAD/AAAAAP8AAAD/AAAAAAAAAAAA/wD/AAAAAAAAAAD/AAD/////////AAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAA/wAAAP8AAAAA/wAAAP8AAAAAAAAA//8AAP//AAAAAAAAAP8AAAAA//8AAAD/AAAAAAAAAAAAAAAA/wAAAAAAAAAAAAD/AAAA////////AAAA/wAAAAAA//8AAAD//wD/AAAAAAAA/wAAAP8A//8A/wAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAP8AAAAAAAAAAAAAAAD/AAAAAAAAAAAA/wD/AAD/AAAAAAD/AP//AAD/AP//AAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAA/wAAAAAAAAAAAAAAAP8AAAAAAAAA//8AAP8AAAD/AAAA/wD/AAAAAP8AAAD//wAAAAAAAAAAAAAA/wAAAAAAAAAAAAD/AAAAAAAAAAAAAAAA/wAAAAD///8AAAAA/wAAAAD///8AAAD//////////////wAAAAAAAAAAAAD/AAAAAAAAAAAAAP//////////////////AAAAAAAAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAP8AAAAAAAAAAAAAAP8AAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAAA/wAA/wAAAAAAAAAA/wAAAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////wAAAAD/AAD/AAAAAAAAAAD/AAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAP8AAAD/AAAAAAAAAP8AAAD//////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAA/wAAAAAAAAAAAP8A/wAAAP8AAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///////////////////8AAAAA/wD//wAA/wAAAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAP8AAAAAAAAAAAD/AP8A/wD/AAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAA/wAA/wAAAAAA/wAA/wD/AP8AAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAAD/AAD/AAAAAAD/AAD/AAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///8AAP8A/wAAAAAAAAAAAP8AAAD/AAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////8AAAAAAP8AAAAAAAAAAAAA/wAAAP8AAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAAAA/wAAAAAAAAAAAAD/AAAA/wAAAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAP8A/wAA/wAAAAAAAP8AAAD/AAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAD/AAAA/wD/AAAAAAAA/wAAAP8AAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///wD//wAAAAAA/wAAAAAAAAD/AAAA//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAP8AAAAAAAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAA/wAAAAAAAAAAAAAAAAAAAAAA/wAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAD/AAAAAAAAAAAAAAAA/wAAAAD/AAAAAP8AAAAA////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAA////////////AAAAAAD/AAAAAP8AAAAA/wAAAAAAAAAAAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAP8AAAD/AAAA/wAAAAAAAP8AAAAA/wAAAAD/AAAAAAAA//////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAD//wD/AAAAAP8AAP8AAAAAAAAA/wAAAAD/AAAAAP8AAAAAAAD/AAAAAP8AAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAA/wD/AAAAAAAA/wAAAAAAAAAAAAD//////////////wAAAAAAAP//////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAD/AAD/AAD/AAAAAAAAAAAAAAAA/wAAAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAP8AAP8AAP8AAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAD//////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAD/AAAA/wAAAP8AAAAAAP8AAAAAAP8AAAAAAP8AAAAAAAAAAAAA/wAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAP8AAAD/AAAA/wAAAAAA/wAAAAAA/wAAAAAA/wAAAP///////////////////wAAAAAAAAAAAAAAAAAAAAAAAAAA/wD/AAAAAP8AAAAA/wAAAAD/AAAAAAD/AAAAAAD/AAAAAAAAAAAAAP8AAAAA/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAAAAAA/wAAAAAAAAAAAP8AAAAAAP8AAAAAAP8AAAAAAP//////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAAAAD/AAAAAAAAAAAA/wAAAAAA/wAAAAAA/wAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAAD///8AAAAAAAAAAAD/////////////////AAAAAAAAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="];</script><script>(function(root){
+  const GRID=68;
+  function axisForStep(step){const a=[];for(let i=0;i<GRID;i+=step)a.push(i);if(a.at(-1)!==67)a.push(67);return a;}
+  function matchStrokes(masks){
+    if(!masks)return [];
+    const a=[],b=[];
+    for(let y=0;y<68;y++)for(let x=0;x<68;x++){
+      if(masks[y*68+x])a.push([x,y]);
+      if(masks[4624+y*68+67-x])b.push([x,y]);
+    }
+    // Cover every receiving stroke before assigning remaining source strokes.
+    const edges=[];
+    a.forEach((p,i)=>b.forEach((q,j)=>edges.push([(p[0]-q[0])**2+(p[1]-q[1])**2,i,j])));
+    edges.sort((p,q)=>p[0]-q[0]||p[1]-q[1]||p[2]-q[2]);
+    const assignment=new Int32Array(a.length).fill(-1),used=new Set();
+    for(const [,i,j] of edges)if(assignment[i]<0&&!used.has(j)){assignment[i]=j;used.add(j);}
+    for(let i=0;i<a.length;i++)if(assignment[i]<0){let best=Infinity;for(let j=0;j<b.length;j++){const d=(a[i][0]-b[j][0])**2+(a[i][1]-b[j][1])**2;if(d<best){best=d;assignment[i]=j;}}}
+    return a.map((p,i)=>({from:p,to:b[assignment[i]]}));
+  }
+  let cachedMasks=null,cachedRoutes=[];
+  function createCells(step=4,masks=null){
+    const axis=axisForStep(step),cells=[],stroke=[],lookup=new Map();
+    function add(x,y,z,ink=0){const key=z*4624+y*68+x;const existing=lookup.get(key);if(existing!==undefined){stroke[existing]=Math.max(stroke[existing],ink);return;}lookup.set(key,stroke.length);cells.push(x,y,z);stroke.push(ink);}
+    for(let y=0;y<68;y++)for(let x=0;x<68;x++){
+      add(x,y,0,masks&&masks[4624+y*68+67-x]?1:0);
+      add(x,y,67,masks&&masks[y*68+x]?1:0);
+    }
+    for(const z of axis)if(z!==0&&z!==67)for(const y of axis)for(const x of axis)add(x,y,z);
+    if(masks!==cachedMasks){cachedMasks=masks;cachedRoutes=matchStrokes(masks);}
+    // Every interior enlarged cell belongs to a route starting in source ink.
+    for(const route of cachedRoutes)for(const z of axis){
+      const depth=(67-z)/67;const s=depth*depth*(3-2*depth);
+      add(Math.round(route.from[0]*(1-s)+route.to[0]*s),Math.round(route.from[1]*(1-s)+route.to[1]*s),z,1);
+    }
+    // Extra depth samples are revealed only around the side views.
+    if(masks){
+      const regular=new Set(axis);
+      for(let z=2;z<67;z+=2)if(!regular.has(z))for(const y of axis)for(const x of axis)add(x,y,z,-1);
+      for(const route of cachedRoutes)for(let z=1;z<67;z++)if(!regular.has(z)){
+        const d=(67-z)/67,s=d*d*(3-2*d);
+        add(Math.round(route.from[0]*(1-s)+route.to[0]*s),Math.round(route.from[1]*(1-s)+route.to[1]*s),z,2);
+      }
+    }
+    return {cells:new Float32Array(cells),stroke:new Float32Array(stroke),axis,instances:stroke.length,routes:cachedRoutes};
+  }
+  const api={GRID,axisForStep,createCells,matchStrokes};
+  if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.SafetyGeometry=api;
+})(typeof window!=='undefined'?window:globalThis);
+</script><script>'use strict';
+const $=id=>document.getElementById(id),canvas=$('art'),gl=canvas.getContext('webgl2',{antialias:true,alpha:false,preserveDrawingBuffer:true});
+let angle=0,auto=false,sensor=false,previousQ=null,sensorSeen=false,sensorTimer=0,tilt=10,last=performance.now(),dirty=true;
+const RAD=Math.PI/180,wrap=a=>(a%360+360)%360;
+const say=s=>$('status').textContent=s;
+if(!gl){say('此瀏覽器無法啟用 WebGL 2，請改用新版 Safari 或 Chrome。');throw Error('WebGL 2 unavailable');}
+const vs=`#version 300 es
+precision highp float;
+precision highp int;
+in vec3 position;in vec3 normal;in vec3 cell;in float stroke;
+uniform sampler2D masks;uniform float angle;uniform float aspect;uniform float tilt;uniform float roll;uniform int spacing;uniform float pointSize;uniform float impulse;
+out float light;out float depth;out float material;
+vec3 rotateY(vec3 p,float a){return vec3(cos(a)*p.x+sin(a)*p.z,p.y,-sin(a)*p.x+cos(a)*p.z);}
+void main(){
+ int x=int(cell.x);int y=int(cell.y);int z=int(cell.z);
+ float a=texelFetch(masks,ivec2(x,y),0).r;
+ float b=texelFetch(masks,ivec2(67-x,y+68),0).r;
+ float facing=cos(angle);
+ float turn=abs(sin(angle));
+ float transition=pow(turn,1.4);
+ float sideFocus=smoothstep(.82,.995,turn);
+ float inkStroke=clamp(stroke,0.,1.);
+ bool extraStroke=stroke>1.;
+ bool extraBackground=stroke<0.;
+ bool front=z==67;bool back=z==0;
+ bool lattice=stroke<0.||(x%spacing==0||x==67)&&(y%spacing==0||y==67)&&(z%spacing==0||z==67);
+ // Text faces and all connecting stroke cells share ONE travelling size kernel.
+ float progress=acos(clamp(facing,-1.,1.))/3.14159265359;
+ float delay=.035*(.55*sin(cell.x*.115)+.45*cos(cell.y*.10));
+ float local=progress-delay*4.*progress*(1.-progress);
+ float distance=(67.-cell.z)/67.-local;
+ float width=(distance>0.? .26:.28)+.10*sideFocus;
+ float pulse=1.-smoothstep(0.,width,abs(distance));
+ // At the exact endpoints the interior retracts, preserving the source artwork.
+ float interiorGate=smoothstep(0.,.12,progress)*smoothstep(0.,.12,1.-progress);
+ float activation=(front||back)?pulse:pow(pulse,2.)*interiorGate;
+ float endpoint=1.-smoothstep(.035,.18,turn);
+ float endpointDot=(front||back)? .23*endpoint:0.;
+ float latticeDot=lattice?pointSize:0.;
+ if(extraBackground)latticeDot*=.78*sideFocus;
+ float background=max(endpointDot,latticeDot);
+ // Background cubes never carry the impulse. Only connected letter strokes do.
+ float peak=(front||back)?1.012:min(.82*impulse,1.05);
+ if(extraStroke)peak=min(peak,.40);
+ float size=background+inkStroke*activation*(peak-background);
+ if(extraStroke)size*=sideFocus;
+ material=mix(mix(.70,1.,endpoint),1.,inkStroke);
+ if(size<.004){gl_Position=vec4(2.,2.,2.,1.);light=0.;depth=0.;return;}
+ vec3 p=vec3(cell.x-33.5,33.5-cell.y,cell.z-33.5)+position*size;
+ p=rotateY(p,angle);
+ vec3 n=rotateY(normal,angle);
+ float pitch=sin(angle)*tilt;
+ p=vec3(p.x,cos(pitch)*p.y-sin(pitch)*p.z,sin(pitch)*p.y+cos(pitch)*p.z);
+ n=vec3(n.x,cos(pitch)*n.y-sin(pitch)*n.z,sin(pitch)*n.y+cos(pitch)*n.z);
+ p.xy=mat2(cos(roll),sin(roll),-sin(roll),cos(roll))*p.xy;
+ float halfY=max(54.,54./aspect);
+ // Mild perspective opens the depth layers in motion; endpoints stay orthographic.
+ float perspective=1.-p.z*turn/240.;
+ gl_Position=vec4(p.x/(halfY*aspect*perspective),p.y/(halfY*perspective),-p.z/160.,1.);
+ light=.29+.71*max(0.,dot(normalize(n),normalize(vec3(-.4,.65,1.))));
+ // Front-on lettering retains the clean white source artwork.
+ light=mix(1.,light,transition);
+ depth=mix(1.,.40+.60*clamp((p.z+55.)/110.,0.,1.),transition);
+}`;
+const fs=`#version 300 es
+precision highp float;in float light;in float depth;in float material;out vec4 color;
+void main(){color=vec4(vec3(.94,.97,1.)*light*depth*material,1.);}`;
+function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
+const program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vs));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));gl.useProgram(program);
+const vertices=[],normals=[];
+for(const [n,u,v] of [ [[0,0,1],[1,0,0],[0,1,0]],[[0,0,-1],[-1,0,0],[0,1,0]],[[1,0,0],[0,0,-1],[0,1,0]],[[-1,0,0],[0,0,1],[0,1,0]],[[0,1,0],[1,0,0],[0,0,-1]],[[0,-1,0],[1,0,0],[0,0,1]] ]){
+ for(const [a,b] of [[-1,-1],[1,-1],[1,1],[-1,-1],[1,1],[-1,1]]){vertices.push(...n.map((t,k)=>(t+a*u[k]+b*v[k])*.5));normals.push(...n);}
+}
+for(const [name,data] of [['position',vertices],['normal',normals]]){const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);const loc=gl.getAttribLocation(program,name);gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,3,gl.FLOAT,false,0,0);}
+const masks=new Uint8Array(9248);window.SAFETY_MASKS.forEach((s,i)=>{masks.set(Uint8Array.from(atob(s),c=>c.charCodeAt(0)),i*4624);});
+const cellBuffer=gl.createBuffer(),cellLocation=gl.getAttribLocation(program,'cell');
+const strokeBuffer=gl.createBuffer(),strokeLocation=gl.getAttribLocation(program,'stroke');
+let geometry,spacing=4,pointSize=.16,impulse=1.;
+function rebuildGeometry(){
+ geometry=window.SafetyGeometry.createCells(spacing,masks);
+ gl.bindBuffer(gl.ARRAY_BUFFER,cellBuffer);
+ gl.bufferData(gl.ARRAY_BUFFER,geometry.cells,gl.STATIC_DRAW);
+ gl.enableVertexAttribArray(cellLocation);gl.vertexAttribPointer(cellLocation,3,gl.FLOAT,false,0,0);gl.vertexAttribDivisor(cellLocation,1);
+ gl.bindBuffer(gl.ARRAY_BUFFER,strokeBuffer);gl.bufferData(gl.ARRAY_BUFFER,geometry.stroke,gl.STATIC_DRAW);gl.enableVertexAttribArray(strokeLocation);gl.vertexAttribPointer(strokeLocation,1,gl.FLOAT,false,0,0);gl.vertexAttribDivisor(strokeLocation,1);
+ $('counts').textContent=`68 × 68 字形 ／ ${geometry.axis.length}³ 空間點陣`;
+ dirty=true;
+}
+rebuildGeometry();
+$('density').onchange=e=>{spacing=+e.target.value;rebuildGeometry();};
+$('pointSize').oninput=e=>{pointSize=+e.target.value/100;dirty=true;};
+$('impulse').oninput=e=>{impulse=+e.target.value/100;dirty=true;};
+const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);gl.pixelStorei(gl.UNPACK_ALIGNMENT,1);
+gl.texImage2D(gl.TEXTURE_2D,0,gl.R8,68,136,0,gl.RED,gl.UNSIGNED_BYTE,masks);
+const uniforms=Object.fromEntries(['angle','aspect','tilt','roll','spacing','pointSize','impulse'].map(n=>[n,gl.getUniformLocation(program,n)]));gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.clearColor(8/255,9/255,10/255,1);
+function draw(){const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,1.5);const w=Math.round(rect.width*dpr),h=Math.round(rect.height*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}gl.viewport(0,0,w,h);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.uniform1f(uniforms.angle,angle*RAD);gl.uniform1f(uniforms.aspect,w/h);gl.uniform1f(uniforms.tilt,tilt*RAD);gl.uniform1f(uniforms.roll,sensor?angle*RAD:0);gl.uniform1i(uniforms.spacing,spacing);gl.uniform1f(uniforms.pointSize,pointSize);gl.uniform1f(uniforms.impulse,impulse);gl.drawArraysInstanced(gl.TRIANGLES,0,36,geometry.instances);dirty=false;}
+function setAngle(a){angle=a;dirty=true;const value=wrap(a);$('angle').value=value;$('degrees').textContent=String(Math.round(value));const t=(1-Math.cos(a*RAD))/2;$('phrase').textContent=t<.12?'這麼晚還不回家':t>.88?'我怕你出事':'話語正在轉換';}
+function stopSensor(){sensor=false;dirty=true;previousQ=null;clearTimeout(sensorTimer);window.removeEventListener('deviceorientation',onOrientation);$('gyro').classList.remove('active');$('gyro').textContent='啟用陀螺儀';}
+function manual(a){auto=false;$('play').textContent='自動旋轉';stopSensor();setAngle(a);}
+$('angle').oninput=e=>manual(+e.target.value);document.querySelectorAll('[data-angle]').forEach(b=>b.onclick=()=>manual(+b.dataset.angle));$('tilt').oninput=e=>{tilt=+e.target.value;dirty=true;};
+$('play').onclick=()=>{stopSensor();auto=!auto;$('play').textContent=auto?'暫停旋轉':'自動旋轉';};
+$('reset').onclick=()=>{previousQ=null;setAngle(0);say(sensor?'已重新校正：目前姿勢為 0°。':'已回到 0°。');};
+function onOrientation(e){if(!sensor||![e.alpha,e.beta,e.gamma].every(Number.isFinite))return;sensorSeen=true;clearTimeout(sensorTimer);const [a,b,g]=[e.alpha,e.beta,e.gamma].map(n=>n*RAD/2),ca=Math.cos(a),sa=Math.sin(a),cb=Math.cos(b),sb=Math.sin(b),cg=Math.cos(g),sg=Math.sin(g);const q=[ca*sb*cg-sa*cb*sg,ca*cb*sg+sa*sb*cg,ca*sb*sg+sa*cb*cg,ca*cb*cg-sa*sb*sg];if(previousQ){const p=previousQ;let w=p[3]*q[3]+p[0]*q[0]+p[1]*q[1]+p[2]*q[2],z=p[3]*q[2]-p[2]*q[3]-p[0]*q[1]+p[1]*q[0];if(w<0){w=-w;z=-z;}const delta=-2*Math.atan2(z,w)/RAD;if(Math.abs(delta)<55)setAngle(angle+delta);}previousQ=q;}
+$('gyro').onclick=async()=>{if(sensor){stopSensor();say('已切換為手動控制。');return;}try{if(!isSecureContext)throw Error('請透過 HTTPS 網址啟用感測器。');if(!window.DeviceOrientationEvent)throw Error('此裝置沒有提供方向感測器，仍可拖曳操作。');if(typeof DeviceOrientationEvent.requestPermission==='function'&&await DeviceOrientationEvent.requestPermission()!=='granted')throw Error('尚未取得動作與方向權限，仍可拖曳操作。');auto=false;$('play').textContent='自動旋轉';previousQ=null;sensorSeen=false;sensor=true;setAngle(0);window.addEventListener('deviceorientation',onOrientation,{passive:true});$('gyro').classList.add('active');$('gyro').textContent='停用陀螺儀';say('已校正 0°，請像轉動方向盤一樣旋轉平板。建議鎖定螢幕方向。');sensorTimer=setTimeout(()=>{if(!sensorSeen){stopSensor();say('沒有收到感測資料，請用平板 Safari 開啟，或繼續拖曳操作。');}},5000);}catch(e){stopSensor();say(e.message);}};
+let drag=null;canvas.onpointerdown=e=>{manual(angle);drag={x:e.clientX,a:angle};canvas.setPointerCapture(e.pointerId);};canvas.onpointermove=e=>{if(drag)setAngle(drag.a+(e.clientX-drag.x)*.5);};canvas.onpointerup=canvas.onpointercancel=()=>drag=null;
+canvas.onkeydown=e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();manual(e.key==='Home'?0:e.key==='End'?180:angle+(e.key==='ArrowRight'?1:-1));}};
+$('full').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();else say('此裝置不提供全螢幕，可用「隱藏介面」觀看。');}catch(e){say('無法進入全螢幕，可用「隱藏介面」觀看。');}};
+$('clean').onclick=()=>{document.body.classList.add('clean');$('restore').hidden=false;dirty=true;};$('restore').onclick=()=>{document.body.classList.remove('clean');$('restore').hidden=true;dirty=true;};new ResizeObserver(()=>dirty=true).observe(canvas);
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();say('繪圖暫停，請重新載入頁面。');});
+window.safety={setAngle:a=>{manual(a);draw();},getState:()=>({angle,count:geometry.instances,designGrid:68,latticeGrid:geometry.axis.length,pointSize,spacing,impulse,sensor,auto,glError:gl.getError()}),capture:()=>canvas.toDataURL()};
+function frame(now){if(auto){setAngle(angle+Math.min(now-last,100)*.012);}last=now;if(dirty)draw();requestAnimationFrame(frame);}requestAnimationFrame(frame);
+</script></body></html>
